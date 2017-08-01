@@ -77,20 +77,24 @@ function buyItem(res) {
     	var choice;
     	var prodId;
     	var prodQty;
+    	var price;
+    	var orderQty = parseInt(answer.ItemQty);
     	//loops through the res.item_id to match with the users choice
     	for (var i = 0; i < res.length; i++) {
           if (res[i].item_id === parseInt(answer.ItemId)) {
             choice = res[i];
             prodId = res[i].item_id;
+            price = choice.cust_price;
             prodQty = choice.stock_quantity - parseInt(answer.ItemQty)
             // console.log(prodQty);
              // console.log(prodId.product_name);
           }
         }
 
-        if(parseInt(answer.ItemQty) < choice.stock_quantity) {
-        	console.log("Yes");
+        if(orderQty < choice.stock_quantity) {
         	updateProduct(prodId, prodQty);
+        	console.log("Your order has processed.\nYour total is : $" + (price * orderQty));
+        	promptUser();
         }else {
         	console.log("Insufficient quantity. The max quantity available is currently " + choice.stock_quantity);
         }
@@ -111,10 +115,31 @@ function updateProduct(prodId, prodQty) {
 			}
 		],
 		function(err, res) {
-			console.log(res.affectedRows + " products updated!\n");
+			// if err throw err;
+			// console.log(res.affectedRows + " products updated!\n");
 			// Call deleteProduct AFTER the UPDATE completes
 		}
 	);
 	 // logs the actual query being run
-  	console.log(query.sql);
+  	// console.log(query.sql);
+}
+
+function promptUser() {
+	//asks if user has another order
+	inquirer.prompt([
+		{
+			name: "contShopping",
+			type: "list",
+			message: "Would you like to continue shopping?",
+			choices: ["yes", "no"],
+	    }
+    ])
+    .then(function(answer) {
+    	if(answer.contShopping === "yes") {
+    		displayProducts();
+    	} else {
+    		console.log("Thank You for shopping with us!\nHave a great day!")
+    		connection.end();
+    	}
+    })
 }
