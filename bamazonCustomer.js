@@ -74,21 +74,47 @@ function buyItem(res) {
     	}
     ])
     .then(function(answer) {
+    	var choice;
     	var prodId;
     	var prodQty;
     	//loops through the res.item_id to match with the users choice
     	for (var i = 0; i < res.length; i++) {
           if (res[i].item_id === parseInt(answer.ItemId)) {
-            prodId = res[i];
+            choice = res[i];
+            prodId = res[i].item_id;
+            prodQty = choice.stock_quantity - parseInt(answer.ItemQty)
+            // console.log(prodQty);
              // console.log(prodId.product_name);
           }
         }
 
-        if(parseInt(answer.ItemQty) < prodId.stock_quantity) {
+        if(parseInt(answer.ItemQty) < choice.stock_quantity) {
         	console.log("Yes");
+        	updateProduct(prodId, prodQty);
         }else {
-        	console.log("Insufficient quantity. The max quantity available is currently " + prodId.stock_quantity);
+        	console.log("Insufficient quantity. The max quantity available is currently " + choice.stock_quantity);
         }
     });
 
+}
+
+function updateProduct(prodId, prodQty) {
+	console.log("Updating all prod quantities...\n");
+	var query = connection.query(
+		"UPDATE products SET ? WHERE ?",
+		[
+			{
+				stock_quantity: prodQty
+			},
+			{
+				item_id: prodId
+			}
+		],
+		function(err, res) {
+			console.log(res.affectedRows + " products updated!\n");
+			// Call deleteProduct AFTER the UPDATE completes
+		}
+	);
+	 // logs the actual query being run
+  	console.log(query.sql);
 }
