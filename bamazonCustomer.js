@@ -115,9 +115,8 @@ function updateProduct(prodId, prodQty) {
 			}
 		],
 		function(err, res) {
-			// if err throw err;
+			if (err) throw err;
 			// console.log(res.affectedRows + " products updated!\n");
-			// Call deleteProduct AFTER the UPDATE completes
 		}
 	);
 	 // logs the actual query being run
