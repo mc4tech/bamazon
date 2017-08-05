@@ -78,6 +78,7 @@ function buyItem(res) {
     	var prodId;
     	var prodQty;
     	var price;
+    	var total;
     	var orderQty = parseInt(answer.ItemQty);
     	//loops through the res.item_id to match with the users choice
     	for (var i = 0; i < res.length; i++) {
@@ -92,8 +93,9 @@ function buyItem(res) {
         }
 
         if(orderQty < choice.stock_quantity) {
+        	total = price * orderQty;
         	updateProduct(prodId, prodQty);
-        	console.log("Your order has processed.\nYour total is : $" + (price * orderQty));
+        	console.log("Your order has processed.\nYour total is : $" + total.toFixed(2));
         	promptUser();
         }else {
         	console.log("Insufficient quantity. The max quantity available is currently " + choice.stock_quantity);
